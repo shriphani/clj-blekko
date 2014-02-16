@@ -17,7 +17,11 @@
      (run-query q auth nil))
 
   ([q auth & options]
-     (let [options-map   (into {} [(into [] options)])
+     ()
+     (let [options-map   (into {}
+                               (map
+                                #(into [] %)
+                                (partition 2 2 options)))
 
            encoded-query (if (:json options-map)
                            (str q " /json /ps=100")
@@ -46,3 +50,4 @@
        (if (:json options-map)
          (json/parse-string result true)
          result))))
+
