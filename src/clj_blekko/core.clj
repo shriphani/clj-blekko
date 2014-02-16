@@ -6,7 +6,7 @@
 
 (def *url-base* "http://blekko.com/ws/")
 
-(def *last-request* nil)
+(def *last-request* (atom nil))
 
 (defn wait-a-sec
   []
@@ -27,7 +27,18 @@
                              (uri/param "q" encoded-query)
                              (uri/param "auth" auth))
 
-           result        (-> query-url client/get :body)]
+           cur-time      (time/now)
+           
+           result        (do
+                           (Thread/sleep
+                            (if @*last-request*
+                              (time/minus
+                               (time/plus @*last-request*
+                                          (time/seconds 10))
+                               cur-time)
+                              0))
+                           (-> query-url client/get :body))]
+
        (if (:json options-map)
          (json/parse-string result true)
          result))))
