@@ -50,4 +50,3 @@
        (if (:json options-map)
          (json/parse-string result true)
          result))))
-
